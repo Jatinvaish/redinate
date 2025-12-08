@@ -39,7 +39,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <div className="flex items-center gap-2 px-3 h-10">
               <Logo />
               <span className="font-semibold text-lg group-data-[collapsible=icon]:hidden">
-                RedinateKit
+                Radinate
               </span>
             </div>
           </SidebarMenuItem>

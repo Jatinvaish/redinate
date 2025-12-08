@@ -53,29 +53,33 @@ type NavItem = {
 
 export const navItems: NavGroup[] = [
   {
-
     title: "",
     items: [
-      { title: "Performance", href: "/performance", icon: BadgeDollarSignIcon },
-      {
-        title: "Default",
-        href: "/",
-        icon: ChartPieIcon
-      },
+      { title: "Governance Dashboard", href: "/", icon: ChartBarDecreasingIcon },
+      { title: "Continuous monitoring", href: "/continuous-monitoring", icon: BadgeDollarSignIcon },
       {
         title: "Analytics",
         href: "#",
         icon: ShoppingBagIcon,
         items: [
+          { title: "AI On /Off Analysis", href: "/on-off-analytics" },
           { title: "Validation Runs", href: "/validation-run" },
+          { title: "Version Compatitor", href: "/version-compatitor", icon: ChartBarDecreasingIcon },
           { title: "Impact", href: "/impact-dashboard" },
           { title: "Bias Radar", href: "/bias-radar" },
-          { title: "On/Off Analysis", href: "/on-off-analytics" },
         ]
       },
       { title: "Sentinel Events", href: "/sentinal-events", icon: BadgeDollarSignIcon },
-      { title: "Governance", href: "/governance", icon: ChartBarDecreasingIcon },
-      { title: "Setting", href: "/setting", icon: ActivityIcon },
+      {
+        title: "Setting",
+        href: "#",
+        icon: ActivityIcon,
+        items: [
+          { title: "Role Based Access", href: "/rbac" },
+          { title: "Account Setting", href: "/account" },
+          { title: "Safety Alert Notification", href: "/afety-alert" },
+        ]
+      },
     ],
   },
 ];

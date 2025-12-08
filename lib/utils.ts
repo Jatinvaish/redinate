@@ -23,7 +23,7 @@ export function generateMeta({
   canonical: string;
 }): Metadata {
   return {
-    title: `${title} - Redinate`,
+    title: `${title} - Radinate`,
     description: description,
     metadataBase: new URL(`https://site.com`),
     alternates: {

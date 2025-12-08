@@ -16,20 +16,20 @@ export default function UserMenu() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar>
-          <AvatarImage src={`/images/avatars/01.png`} alt="Redinatekit" />
-          <AvatarFallback className="rounded-lg">TB</AvatarFallback>
+          <AvatarImage src={`/images/avatars/01.png`} alt="Radinate" />
+          <AvatarFallback className="rounded-lg">RD</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-(--radix-dropdown-menu-trigger-width) min-w-60" align="end">
         <DropdownMenuLabel className="p-0">
           <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
             <Avatar>
-              <AvatarImage src={`/images/avatars/01.png`} alt="Redinatekit" />
-              <AvatarFallback className="rounded-lg">TB</AvatarFallback>
+              <AvatarImage src={`/images/avatars/01.png`} alt="Radinate" />
+              <AvatarFallback className="rounded-lg">RD</AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">Toby Belhome</span>
-              <span className="text-muted-foreground truncate text-xs">hello@tobybelhome.com</span>
+              <span className="truncate font-semibold">Radinate</span>
+              <span className="text-muted-foreground truncate text-xs">info@radinate.com</span>
             </div>
           </div>
         </DropdownMenuLabel>

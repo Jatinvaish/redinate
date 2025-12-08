@@ -1,372 +1,496 @@
 "use client";
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent
 } from "@/components/ui/chart";
 import {
+  LineChart,
+  Line,
   BarChart,
   Bar,
   XAxis,
   YAxis,
   CartesianGrid,
-  Legend,
-  LineChart,
-  Line
+  PieChart,
+  Pie,
+  Cell,
+  Label
 } from "recharts";
-import { Download, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  FileText,
+  Settings,
+  TrendingUp
+} from "lucide-react";
+import DynamicSummaryCards, { SummaryCardData } from "@/components/dynamicSummaryCard";
 
-const sensitivityComparisonData = [
-  { category: "21-40", cohortA: 92, cohortB: 87 },
-  { category: "41-65", cohortA: 87, cohortB: 91 },
-  { category: "65+", cohortA: 91, cohortB: 94 },
-  { category: "<21", cohortA: 88, cohortB: 89 },
-  { category: "Asian", cohortA: 94, cohortB: 96 },
-  { category: "Black", cohortA: 88, cohortB: 91 },
-  { category: "Hispanic", cohortA: 86, cohortB: 90 },
-  { category: "Other", cohortA: 87, cohortB: 92 },
-  { category: "White", cohortA: 89, cohortB: 93 },
-  { category: "Female", cohortA: 91, cohortB: 97 },
-  { category: "Male", cohortA: 84, cohortB: 86 },
-  { category: "Non-binary", cohortA: 89, cohortB: 92 },
-  { category: "Foot", cohortA: 89, cohortB: 92 },
-  { category: "Hand", cohortA: 92, cohortB: 92 },
-  { category: "Lower Ext.", cohortA: 77, cohortB: null },
-  { category: "Spine Hip.", cohortA: 85, cohortB: 94 },
-  { category: "Unspecif.", cohortA: 92, cohortB: 95 },
-  { category: "Upper Ext.", cohortA: 87, cohortB: 97 }
+const aiTools = [
+  {
+    name: "Gleamer BoneView",
+    version: "v2.4.1",
+    riskLevel: "low",
+    status: "active",
+    lastValidation: "2024-12-01",
+    drift: "normal",
+    issues: 0,
+    sites: 21
+  },
+  {
+    name: "Aidoc Brain CT",
+    version: "v3.1.2",
+    riskLevel: "medium",
+    status: "active",
+    lastValidation: "2024-11-28",
+    drift: "minor",
+    issues: 2,
+    sites: 15
+  },
+  {
+    name: "Viz.ai Stroke",
+    version: "v4.0.5",
+    riskLevel: "low",
+    status: "active",
+    lastValidation: "2024-12-03",
+    drift: "normal",
+    issues: 0,
+    sites: 18
+  },
+  {
+    name: "Arterys Cardiac",
+    version: "v2.8.1",
+    riskLevel: "high",
+    status: "review",
+    lastValidation: "2024-11-15",
+    drift: "significant",
+    issues: 5,
+    sites: 8
+  }
 ];
 
-const specificityComparisonData = [
-  { category: "21-40", cohortA: 95, cohortB: 90 },
-  { category: "41-65", cohortA: 91, cohortB: 94 },
-  { category: "65+", cohortA: 94, cohortB: 91 },
-  { category: "<21", cohortA: 89, cohortB: 91 },
-  { category: "Asian", cohortA: 96, cohortB: 94 },
-  { category: "Black", cohortA: 91, cohortB: 93 },
-  { category: "Hispanic", cohortA: 90, cohortB: 97 },
-  { category: "Other", cohortA: 92, cohortB: 97 },
-  { category: "White", cohortA: 93, cohortB: 100 },
-  { category: "Female", cohortA: 97, cohortB: 97 },
-  { category: "Male", cohortA: 86, cohortB: 97 },
-  { category: "Non-binary", cohortA: 92, cohortB: 100 },
-  { category: "Foot", cohortA: 92, cohortB: 92 },
-  { category: "Hand", cohortA: 92, cohortB: 92 },
-  { category: "Lower Ext.", cohortA: null, cohortB: 98 },
-  { category: "Spine Hip.", cohortA: 94, cohortB: 94 },
-  { category: "Unspecif.", cohortA: 95, cohortB: 89 },
-  { category: "Upper Ext.", cohortA: 97, cohortB: 97 }
+const validationTrendData = [
+  { month: "May", completed: 12, failed: 1 },
+  { month: "Jun", completed: 15, failed: 2 },
+  { month: "Jul", completed: 14, failed: 1 },
+  { month: "Aug", completed: 18, failed: 3 },
+  { month: "Sep", completed: 16, failed: 2 },
+  { month: "Oct", completed: 20, failed: 1 },
+  { month: "Nov", completed: 19, failed: 2 },
+  { month: "Dec", completed: 14, failed: 1 }
 ];
 
-const trendData = [
-  { month: "Nov 2024", allStudies: 60, selectedCohort: 62, baseline: 60 },
-  { month: "Dec 2024", allStudies: 61, selectedCohort: 63, baseline: 60 },
-  { month: "Jan 2025", allStudies: 61.5, selectedCohort: 64, baseline: 60 },
-  { month: "Feb 2025", allStudies: 62, selectedCohort: 64.5, baseline: 60 },
-  { month: "Mar 2025", allStudies: 62, selectedCohort: 65, baseline: 60 },
-  { month: "Apr 2025", allStudies: 62.5, selectedCohort: 65, baseline: 60 },
-  { month: "May 2025", allStudies: 63, selectedCohort: 64.5, baseline: 60 },
-  { month: "Jun 2025", allStudies: 63, selectedCohort: 64, baseline: 60 },
-  { month: "Jul 2025", allStudies: 63.5, selectedCohort: 64, baseline: 60 },
-  { month: "Aug 2025", allStudies: 64, selectedCohort: 64.5, baseline: 60 },
-  { month: "Sep 2025", allStudies: 64, selectedCohort: 65, baseline: 60 },
-  { month: "Oct 2025", allStudies: 64.5, selectedCohort: 65, baseline: 60 }
+const performanceData = [
+  { month: "May", agreement: 88, sensitivity: 91, specificity: 90 },
+  { month: "Jun", agreement: 89, sensitivity: 92, specificity: 91 },
+  { month: "Jul", agreement: 89.5, sensitivity: 92.5, specificity: 91.5 },
+  { month: "Aug", agreement: 90, sensitivity: 93, specificity: 92 },
+  { month: "Sep", agreement: 90.5, sensitivity: 93.5, specificity: 92.5 },
+  { month: "Oct", agreement: 91, sensitivity: 94, specificity: 93 },
+  { month: "Nov", agreement: 91.5, sensitivity: 94.2, specificity: 93.5 },
+  { month: "Dec", agreement: 92, sensitivity: 94.5, specificity: 94 }
 ];
 
-export default function CompareDashboard() {
-  const [cohortA, setCohortA] = useState("all-sites");
-  const [cohortB, setCohortB] = useState("selected-cohort");
+const riskDistribution = [
+  { name: "Low Risk", value: 2, fill: "#22c55e" },
+  { name: "Medium Risk", value: 1, fill: "#eab308" },
+  { name: "High Risk", value: 1, fill: "#ef4444" }
+];
+
+const issuesByCategory = [
+  { category: "Performance", count: 3 },
+  { category: "Bias", count: 2 },
+  { category: "Drift", count: 1 },
+  { category: "Safety", count: 1 }
+];
+
+export default function GovernanceDashboard() {
+
+  const summaryCards: SummaryCardData[] = [
+    {
+      title: "Active AI Tools",
+      value: 4,
+      changeValue: 0,
+      icon: "calendar",
+      bgColor: "blue",
+      changeLabel: "Across 21 sites"
+    },
+    {
+      title: "Validations (30d)",
+      value: 33,
+      changeValue: 94.3,
+      icon: "checkCircle",
+      bgColor: "green",
+      changeLabel: "success rate"
+    },
+    {
+      title: "Open Issues",
+      value: 7,
+      changeValue: 0,
+      icon: "alertCircle",
+      bgColor: "yellow",
+      changeLabel: "3 require attention"
+    },
+    {
+      title: "Compliance Score",
+      value: 96,
+      changeValue: 2,
+      icon: "checkCircle",
+      bgColor: "purple",
+      suffix: "%",
+      changeLabel: "vs last month"
+    }
+  ];
+
+  const getRiskBadge = (risk: string) => {
+    const variants: Record<string, { variant: "default" | "secondary" | "destructive"; className: string }> = {
+      low: { variant: "default", className: "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400" },
+      medium: { variant: "secondary", className: "bg-yellow-100 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-400" },
+      high: { variant: "destructive", className: "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400" }
+    };
+    const config = variants[risk];
+    return (
+      <Badge variant={config.variant} className={config.className}>
+        {risk.toUpperCase()}
+      </Badge>
+    );
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "active":
+        return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+      case "review":
+        return <AlertTriangle className="h-4 w-4 text-yellow-500" />;
+      default:
+        return <CheckCircle2 className="h-4 w-4 text-gray-500" />;
+    }
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Compare</h1>
+          <h1 className="text-3xl font-bold">AI Governance Dashboard</h1>
           <p className="text-muted-foreground mt-2">
-            Gleamer BoneView - Performance Comparison
+            Monitor and manage AI tools across your organization
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Select value={cohortA} onValueChange={setCohortA}>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all-sites">All Sites (21)</SelectItem>
-              <SelectItem value="site-a">Site A</SelectItem>
-              <SelectItem value="site-b">Site B</SelectItem>
-            </SelectContent>
-          </Select>
-          <span className="text-muted-foreground">vs</span>
-          <Select value={cohortB} onValueChange={setCohortB}>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="selected-cohort">Selected Cohort</SelectItem>
-              <SelectItem value="site-c">Site C</SelectItem>
-              <SelectItem value="site-d">Site D</SelectItem>
-            </SelectContent>
-          </Select>
           <Button variant="outline">
-            <Download className="mr-2 h-4 w-4" />
-            Export
+            <FileText className="mr-2 h-4 w-4" />
+            Generate Report
+          </Button>
+          <Button>
+            <Settings className="mr-2 h-4 w-4" />
+            Configure
           </Button>
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Agreement Rate</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-muted-foreground">All Studies</span>
-                  <Badge variant="outline">60%</Badge>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="text-2xl font-bold">63.0%</div>
-                  <div className="flex items-center text-green-600 text-sm">
-                    <ArrowUpRight className="h-4 w-4" />
-                    <span>Above Baseline</span>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-muted-foreground">Selected Cohort</span>
-                  <Badge variant="outline">60%</Badge>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="text-2xl font-bold">64.0%</div>
-                  <div className="flex items-center text-green-600 text-sm">
-                    <ArrowUpRight className="h-4 w-4" />
-                    <span>Above Baseline</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Sensitivity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-muted-foreground">All Studies</span>
-                  <Badge>94.23%</Badge>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="text-2xl font-bold text-green-600">Above Baseline</div>
-                </div>
-              </div>
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-muted-foreground">Selected Cohort</span>
-                  <Badge>94.48%</Badge>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="text-2xl font-bold text-green-600">Above Baseline</div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Specificity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-muted-foreground">All Studies</span>
-                  <Badge>94.23%</Badge>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="text-2xl font-bold text-green-600">Above Baseline</div>
-                </div>
-              </div>
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-muted-foreground">Selected Cohort</span>
-                  <Badge>97.3%</Badge>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="text-2xl font-bold text-green-600">Above Baseline</div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Performance Comparison Over Cohorts</CardTitle>
-            <div className="flex items-center gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <div className="h-3 w-3 rounded-full bg-green-500" />
-                <span>Age</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="h-3 w-3 rounded-full bg-blue-500" />
-                <span>Ethnicity</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="h-3 w-3 rounded-full bg-cyan-500" />
-                <span>Gender</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="h-3 w-3 rounded-full bg-purple-500" />
-                <span>Study Type</span>
-              </div>
-            </div>
-          </div>
-          <p className="text-sm text-muted-foreground">Sensitivity</p>
-        </CardHeader>
-        <CardContent>
-          <ChartContainer config={{}} className="h-[400px] w-full">
-            <BarChart data={sensitivityComparisonData} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-              <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 12 }} />
-              <YAxis type="category" dataKey="category" width={100} tick={{ fontSize: 11 }} />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <Legend />
-              <Bar dataKey="cohortA" fill="#3b82f6" name="All Studies" radius={[0, 4, 4, 0]} />
-              <Bar dataKey="cohortB" fill="#22c55e" name="Selected Cohort" radius={[0, 4, 4, 0]} />
-            </BarChart>
-          </ChartContainer>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Performance Comparison Over Cohorts</CardTitle>
-          <p className="text-sm text-muted-foreground">Specificity</p>
-        </CardHeader>
-        <CardContent>
-          <ChartContainer config={{}} className="h-[400px] w-full">
-            <BarChart data={specificityComparisonData} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-              <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 12 }} />
-              <YAxis type="category" dataKey="category" width={100} tick={{ fontSize: 11 }} />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <Legend />
-              <Bar dataKey="cohortA" fill="#3b82f6" name="All Studies" radius={[0, 4, 4, 0]} />
-              <Bar dataKey="cohortB" fill="#22c55e" name="Selected Cohort" radius={[0, 4, 4, 0]} />
-            </BarChart>
-          </ChartContainer>
-        </CardContent>
-      </Card>
+      <DynamicSummaryCards cards={summaryCards} />
 
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Agreement Rate Trend</CardTitle>
-            <p className="text-sm text-muted-foreground">Last 12 Months</p>
+            <CardTitle>AI Tools Status</CardTitle>
+            <p className="text-sm text-muted-foreground">Current deployment overview</p>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {aiTools.map((tool, idx) => (
+                <div key={idx} className="rounded-lg border p-4 hover:bg-muted/50 transition-colors">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-semibold">{tool.name}</h3>
+                        <Badge variant="outline">{tool.version}</Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Deployed across {tool.sites} sites
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {getStatusIcon(tool.status)}
+                      {getRiskBadge(tool.riskLevel)}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <p className="text-muted-foreground text-xs mb-1">Last Validation</p>
+                      <p className="font-medium">{tool.lastValidation}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground text-xs mb-1">Drift Status</p>
+                      <Badge
+                        variant="outline"
+                        className={
+                          tool.drift === "normal"
+                            ? "text-green-600 border-green-600"
+                            : tool.drift === "minor"
+                              ? "text-yellow-600 border-yellow-600"
+                              : "text-red-600 border-red-600"
+                        }>
+                        {tool.drift}
+                      </Badge>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground text-xs mb-1">Open Issues</p>
+                      <p className={`font-medium ${tool.issues > 0 ? "text-red-600" : "text-green-600"}`}>
+                        {tool.issues}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <Button variant="ghost" size="sm">View Details</Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Risk Distribution</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={{}} className="h-[200px]">
+                <PieChart>
+                  <Pie
+                    data={riskDistribution}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={50}
+                    outerRadius={80}>
+                    {riskDistribution.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                    <Label
+                      content={({ viewBox }) => {
+                        if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                          return (
+                            <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
+                              <tspan x={viewBox.cx} y={viewBox.cy} className="fill-foreground text-2xl font-bold">
+                                4
+                              </tspan>
+                              <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 20} className="fill-muted-foreground text-sm">
+                                Tools
+                              </tspan>
+                            </text>
+                          );
+                        }
+                      }}
+                    />
+                  </Pie>
+                </PieChart>
+              </ChartContainer>
+              <div className="mt-4 space-y-2">
+                {riskDistribution.map((item, idx) => (
+                  <div key={idx} className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2">
+                      <div className="h-3 w-3 rounded-full" style={{ backgroundColor: item.fill }} />
+                      <span>{item.name}</span>
+                    </div>
+                    <span className="font-medium">{item.value}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Issues by Category</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {issuesByCategory.map((item, idx) => (
+                  <div key={idx} className="flex items-center justify-between">
+                    <span className="text-sm">{item.category}</span>
+                    <div className="flex items-center gap-2">
+                      <div className="h-2 w-32 bg-muted rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-red-500"
+                          style={{ width: `${(item.count / 7) * 100}%` }}
+                        />
+                      </div>
+                      <span className="text-sm font-medium w-6 text-right">{item.count}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Validation Runs Trend</CardTitle>
+            <p className="text-sm text-muted-foreground">Last 8 months</p>
           </CardHeader>
           <CardContent>
             <ChartContainer config={{}} className="h-[300px] w-full">
-              <LineChart data={trendData}>
+              <BarChart data={validationTrendData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                <YAxis domain={[58, 66]} tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} />
                 <ChartTooltip content={<ChartTooltipContent />} />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="allStudies"
-                  stroke="#06b6d4"
-                  strokeWidth={2}
-                  dot={false}
-                  name="All Studies"
-                />
-                <Line
-                  type="monotone"
-                  dataKey="selectedCohort"
-                  stroke="#22c55e"
-                  strokeWidth={2}
-                  dot={false}
-                  name="Selected Cohort"
-                />
-                <Line
-                  type="monotone"
-                  dataKey="baseline"
-                  stroke="#6b7280"
-                  strokeWidth={2}
-                  strokeDasharray="5 5"
-                  dot={false}
-                  name="Baseline"
-                />
-              </LineChart>
+                <Bar dataKey="completed" fill="#22c55e" name="Completed" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="failed" fill="#ef4444" name="Failed" radius={[4, 4, 0, 0]} />
+              </BarChart>
             </ChartContainer>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Key Insights</CardTitle>
+            <CardTitle>Performance Metrics Trend</CardTitle>
+            <p className="text-sm text-muted-foreground">Aggregate across all tools</p>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="rounded-lg border p-3">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="h-2 w-2 rounded-full bg-green-500" />
-                <p className="font-medium text-sm">Performance Gap</p>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Selected cohort shows 1.0% higher agreement rate compared to all studies baseline
-              </p>
-            </div>
+          <CardContent>
+            <ChartContainer config={{}} className="h-[300px] w-full">
+              <LineChart data={performanceData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                <YAxis domain={[85, 95]} tick={{ fontSize: 12 }} />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Line
+                  type="monotone"
+                  dataKey="agreement"
+                  stroke="#06b6d4"
+                  strokeWidth={2}
+                  dot={false}
+                  name="Agreement"
+                />
+                <Line
+                  type="monotone"
+                  dataKey="sensitivity"
+                  stroke="#22c55e"
+                  strokeWidth={2}
+                  dot={false}
+                  name="Sensitivity"
+                />
+                <Line
+                  type="monotone"
+                  dataKey="specificity"
+                  stroke="#a855f7"
+                  strokeWidth={2}
+                  dot={false}
+                  name="Specificity"
+                />
+              </LineChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+      </div>
 
-            <div className="rounded-lg border p-3">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="h-2 w-2 rounded-full bg-blue-500" />
-                <p className="font-medium text-sm">Sensitivity Variance</p>
+      <div className="grid gap-6 lg:grid-cols-3">
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Activity</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="rounded-full bg-green-100 dark:bg-green-950 p-1.5">
+                  <CheckCircle2 className="h-4 w-4 text-green-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Validation completed</p>
+                  <p className="text-xs text-muted-foreground">Gleamer BoneView - Site A</p>
+                  <p className="text-xs text-muted-foreground">2 hours ago</p>
+                </div>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Greatest difference observed in Upper Extremity category with 10% gap
-              </p>
-            </div>
 
-            <div className="rounded-lg border p-3">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="h-2 w-2 rounded-full bg-yellow-500" />
-                <p className="font-medium text-sm">Specificity Analysis</p>
+              <div className="flex items-start gap-3">
+                <div className="rounded-full bg-yellow-100 dark:bg-yellow-950 p-1.5">
+                  <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Drift detected</p>
+                  <p className="text-xs text-muted-foreground">Aidoc Brain CT - Performance</p>
+                  <p className="text-xs text-muted-foreground">5 hours ago</p>
+                </div>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Selected cohort achieves 3.07% higher specificity across all categories
-              </p>
+
+              <div className="flex items-start gap-3">
+                <div className="rounded-full bg-red-100 dark:bg-red-950 p-1.5">
+                  <AlertTriangle className="h-4 w-4 text-red-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">High-priority issue</p>
+                  <p className="text-xs text-muted-foreground">Arterys Cardiac - Bias detected</p>
+                  <p className="text-xs text-muted-foreground">1 day ago</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="rounded-full bg-blue-100 dark:bg-blue-950 p-1.5">
+                  <TrendingUp className="h-4 w-4 text-blue-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Performance improved</p>
+                  <p className="text-xs text-muted-foreground">Viz.ai Stroke - +3.2% sensitivity</p>
+                  <p className="text-xs text-muted-foreground">2 days ago</p>
+                </div>
+              </div>
             </div>
-    
-            <div className="rounded-lg border p-3">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="h-2 w-2 rounded-full bg-purple-500" />
-                <p className="font-medium text-sm">Trend Direction</p>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Both cohorts show consistent upward trend over the 12-month period
-              </p>
+          </CardContent>
+        </Card>
+
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Button variant="outline" className="justify-start h-auto py-4">
+                <div className="text-left">
+                  <div className="font-semibold mb-1">Start Validation Run</div>
+                  <div className="text-xs text-muted-foreground">
+                    Initiate new validation for deployed models
+                  </div>
+                </div>
+              </Button>
+
+              <Button variant="outline" className="justify-start h-auto py-4">
+                <div className="text-left">
+                  <div className="font-semibold mb-1">Review Bias Radar</div>
+                  <div className="text-xs text-muted-foreground">
+                    Check fairness metrics across cohorts
+                  </div>
+                </div>
+              </Button>
+
+              <Button variant="outline" className="justify-start h-auto py-4">
+                <div className="text-left">
+                  <div className="font-semibold mb-1">Log Sentinel Event</div>
+                  <div className="text-xs text-muted-foreground">
+                    Report adverse events or near misses
+                  </div>
+                </div>
+              </Button>
+
+              <Button variant="outline" className="justify-start h-auto py-4">
+                <div className="text-left">
+                  <div className="font-semibold mb-1">View Transparency Reports</div>
+                  <div className="text-xs text-muted-foreground">
+                    Access model cards and documentation
+                  </div>
+                </div>
+              </Button>
             </div>
           </CardContent>
         </Card>

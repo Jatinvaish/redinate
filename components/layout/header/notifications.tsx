@@ -39,8 +39,8 @@ const Notifications = () => {
           </div>
         </DropdownMenuLabel>
 
-        <ScrollArea className="h-[350px]">
-          {notifications.map((item: Notification, key) => (
+        <ScrollArea className="max-h-[350px]">
+          {notifications?.length>0 ?  notifications.map((item: Notification, key) => (
             <DropdownMenuItem
               key={key}
               className="group flex cursor-pointer items-start gap-9 rounded-none border-b px-4 py-3">
@@ -80,7 +80,9 @@ const Notifications = () => {
                 </div>
               )}
             </DropdownMenuItem>
-          ))}
+          )):(
+            <div className="p-4 text-center text-sm text-muted-foreground">No new notifications</div>
+          )}
         </ScrollArea>
       </DropdownMenuContent>
     </DropdownMenu>
