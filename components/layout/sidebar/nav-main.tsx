@@ -78,7 +78,7 @@ export const navItems: NavGroup[] = [
         items: [
           { title: "Role Based Access", href: "/rbac" },
           { title: "Account Setting", href: "/account" },
-          { title: "Safety Alert Notification", href: "/afety-alert" },
+          { title: "Safety Alert Notification", href: "/alert-notification" },
         ]
       },
     ],
