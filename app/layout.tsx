@@ -1,5 +1,5 @@
 import React from "react";
-import { cookies } from "next/headers";
+// import { cookies } from "next/headers";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "next-themes";
 import GoogleAnalyticsInit from "@/lib/ga";
@@ -15,14 +15,14 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieStore = await cookies();
+  // ---------------- Root Layout Logic ----------------
+  // const cookieStore = await cookies();
 
   const themeSettings = {
-    preset: (cookieStore.get("theme_preset")?.value ?? DEFAULT_THEME.preset) as any,
-    scale: (cookieStore.get("theme_scale")?.value ?? DEFAULT_THEME.scale) as any,
-    radius: (cookieStore.get("theme_radius")?.value ?? DEFAULT_THEME.radius) as any,
-    contentLayout:
-      (cookieStore.get("theme_content_layout")?.value ?? DEFAULT_THEME.contentLayout) as any
+    preset: DEFAULT_THEME.preset,
+    scale: DEFAULT_THEME.scale,
+    radius:  DEFAULT_THEME.radius,
+    contentLayout:DEFAULT_THEME.contentLayout
   };
 
   const bodyAttributes = Object.fromEntries(
@@ -33,6 +33,9 @@ export default async function RootLayout({
         value
       ])
   );
+
+  // ---------------- Sidebar Logic ----------------
+  const defaultOpen = false;
 
   return (
     <html lang="en" suppressHydrationWarning>
