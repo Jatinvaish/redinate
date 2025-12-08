@@ -19,6 +19,7 @@ import {
   ChartBarDecreasingIcon,
   ChartPieIcon,
   ChevronRight,
+  DockIcon,
   GaugeIcon,
   ShoppingBagIcon,
   WalletMinimalIcon,
@@ -71,6 +72,7 @@ export const navItems: NavGroup[] = [
         ]
       },
       { title: "Sentinel Events", href: "/sentinal-events", icon: BadgeDollarSignIcon },
+      { title: "Policy Threshold", href: "/policy-threshold", icon: DockIcon },
       {
         title: "Setting",
         href: "#",

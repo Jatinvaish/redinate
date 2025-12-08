@@ -50,6 +50,7 @@
   };
 
   export default function DynamicSummaryCards({ cards }: SummaryCardsProps) {
+    
     return (
       <div className="overflow-hidden rounded-md border">
         <div className="grid divide-y-1! md:grid-cols-2 md:divide-x-1! lg:grid-cols-4 lg:divide-y-0! [&>*:nth-child(2)]:border-e-0! md:[&>*:nth-child(2)]:border-e-0! lg:[&>*:nth-child(2)]:border-e-1!">
