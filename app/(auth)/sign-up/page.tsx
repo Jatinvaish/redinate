@@ -94,7 +94,7 @@ export default function Page() {
             <img
               src="/logos/radinate__simple.png"
               alt="Radinate logo"
-              className="h-18 w-22"
+              className="h-16 w-16"
               />
           </div>
           <CardTitle className="text-2xl font-bold pt-0.5 mt-3">

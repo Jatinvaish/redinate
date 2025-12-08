@@ -57,6 +57,7 @@ export const navItems: NavGroup[] = [
     title: "",
     items: [
       { title: "Governance Dashboard", href: "/governance", icon: ChartBarDecreasingIcon },
+      { title: "Clinical Validation", href: "/clinical-validation", icon: BadgeDollarSignIcon },
       { title: "Applied Model Card ", href: "/applied-modal-card", icon: BadgeDollarSignIcon },
       { title: "Continuous monitoring", href: "/continuous-monitoring", icon: BadgeDollarSignIcon },
       {
@@ -66,8 +67,8 @@ export const navItems: NavGroup[] = [
         items: [
           { title: "AI On /Off Analysis", href: "/on-off-analytics" },
           { title: "Validation Runs", href: "/validation-run" },
-          { title: "Version Compatitor", href: "/version-compatitor", icon: ChartBarDecreasingIcon },
-          { title: "Human AI", href: "/human-ai" },
+          { title: "Version comparator", href: "/version-compatitor", icon: ChartBarDecreasingIcon },
+          { title: "Human & AI", href: "/human-ai" },
           { title: "Bias Radar", href: "/bias-radar" },
         ]
       },
